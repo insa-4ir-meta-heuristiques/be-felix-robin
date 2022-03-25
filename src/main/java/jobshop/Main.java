@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jobshop.encodings.ResourceOrder;
 import jobshop.encodings.Schedule;
+import jobshop.encodings.Task;
 import jobshop.solvers.*;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;

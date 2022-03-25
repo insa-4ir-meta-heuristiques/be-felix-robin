@@ -2,6 +2,7 @@ package jobshop.encodings;
 
 import jobshop.Instance;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
@@ -60,6 +61,22 @@ public final class ResourceOrder extends Encoding {
         for(int i=0 ; i<this.tasksByMachine.length ; i++) {
             this.tasksByMachine[i] = original.tasksByMachine[i].clone();
         }
+    }
+
+    /** Finds the tasks among the instance that can be added to the ResourceOrder */
+    // TODO:
+    public ArrayList<Task> getValidTasks() {
+        Instance instance = this.instance;
+        ResourceOrder res_order = this;
+
+        for (int i = 0; i < instance.numTasks; i++) {
+            for (int j = 0; j < instance.numJobs; j++) {
+                int t = instance.machine(i, j);
+            }
+
+        }
+
+        return null;
     }
 
     /** Adds the given task to the queue of the given machine. */
