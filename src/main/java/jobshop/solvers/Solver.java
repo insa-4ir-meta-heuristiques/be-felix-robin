@@ -22,7 +22,7 @@ public interface Solver {
         switch (name) {
             case "basic": return new BasicSolver();
             case "spt": return new GreedySolver(GreedySolver.Priority.SPT);
-            // TODO: add new solvers
+            case "lrpt": return new GreedySolver(GreedySolver.Priority.LRPT);
             default: throw new RuntimeException("Unknown solver: "+ name);
         }
     }

@@ -30,46 +30,55 @@ public final class Task {
                 task == task1.task;
     }
 
-    // TODO:
-    public boolean isValid(ResourceOrder resourceOrder) {
-        Task[][] tasks = resourceOrder.tasksByMachine;
 
-        int nb_tasks_left = this.task;
-        ArrayList<Task> pred_tasks_ro = this.getPredecessorsInResourceOrder(resourceOrder);
-        //TODO : il faut obtenir les tâches prédécesseures total (pred_tasks_ro c'est les tâches pred dans le ro
-        //TODO : après faut voir si toutes les tâches pred sont dans les taches pred du ro
-        //TODO : si oui, la tâche est valide
+    public boolean isPossible(ResourceOrder resourceOrder) {
 
-        //TODO : l'objet à se trimbaler c'est la liste des prédécesseurs restant
-        //TODO et juste check si vide à la fin
+        // The predecessors actually present in the RO
+        ArrayList<Task> pred_tasks_ro = this.getOtherTasksInResourceOrder(resourceOrder);
 
-        for (int i = 0; i < tasks.length; i++) {
-            for (int j = 0; j < tasks[i].length; j++) {
-                Task t = tasks[i][j];
+        // A task cannot be present twice in the RO
+        if (pred_tasks_ro.contains(this)) {return false;}
 
-                if (pred_tasks_ro.contains(t)) {
-                    nb_tasks_left--;
-                }
+        // Contains all predecessors needed, we remove them when we find them
+        ArrayList<Task> pred_tasks_necessary = this.getNecessaryPredecessors();
+
+        for (int i = 0; i < pred_tasks_necessary.size(); i++) {
+            Task t = pred_tasks_necessary.get(i);
+            if (!pred_tasks_ro.contains(t)) {
+                return false;
             }
         }
 
-
-        return (nb_tasks_left == 0);
+        return true;
     }
 
-    public ArrayList<Task> getPredecessorsInResourceOrder(ResourceOrder resourceOrder) {
+    public ArrayList<Task> getNecessaryPredecessors() {
+        ArrayList<Task> necessary_pred = new ArrayList<>();
+        for (int i = 0; i < this.task; i++) {
+            Task pred = new Task(this.job, i);
+            necessary_pred.add(pred);
+        }
+        return necessary_pred;
+    }
+
+    public ArrayList<Task> getOtherTasksInResourceOrder(ResourceOrder resourceOrder) {
 
 
         Task[][] tasks = resourceOrder.tasksByMachine;
         ArrayList<Task> predecessors = new ArrayList<>();
 
+        // Iterate through the machines with i
         for (int i = 0; i < tasks.length; i++) {
+            // Iterate through the jobs with j
             for (int j = 0; j < tasks[i].length; j++) {
-                Task t = tasks[i][j];
-                if (t.job == this.job && t.task < this.task) {
+                // If the spot is not empty and has the right job number
+                if (tasks[i][j] != null && tasks[i][j].job == this.job) {
+                    Task t = tasks[i][j];
                     predecessors.add(t);
                 }
+
             }
+
         }
         return predecessors;
     }

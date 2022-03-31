@@ -11,6 +11,6 @@ jobshop/solvers/neighborhood/Neighborhood.class
 jobshop/BestKnownResults.class
 jobshop/encodings/Schedule.class
 jobshop/Main.class
-jobshop/solvers/neighborhood/Nowicki$Swap.class
 jobshop/solvers/GreedySolver$Priority.class
+jobshop/solvers/neighborhood/Nowicki$Swap.class
 jobshop/solvers/BasicSolver.class

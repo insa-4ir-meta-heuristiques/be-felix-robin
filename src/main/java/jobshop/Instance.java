@@ -5,6 +5,7 @@ import jobshop.encodings.Task;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -72,6 +73,17 @@ public final class Instance {
 
         durations = new int[numJobs][numTasks];
         machines = new int[numJobs][numTasks];
+    }
+
+    /** Returns all tasks in the instance. */
+    public ArrayList<Task> getAllTasks() {
+        ArrayList<Task> all_tasks = new ArrayList<>();
+        for (int j = 0; j < this.numJobs; j++) {
+            for (int i = 0; i < this.numTasks; i++) {
+                all_tasks.add(new Task(j, i));
+            }
+        }
+        return all_tasks;
     }
 
     /** Parses a instance from a file. */

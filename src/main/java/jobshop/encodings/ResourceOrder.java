@@ -63,22 +63,6 @@ public final class ResourceOrder extends Encoding {
         }
     }
 
-    /** Finds the tasks among the instance that can be added to the ResourceOrder */
-    // TODO:
-    public ArrayList<Task> getValidTasks() {
-        Instance instance = this.instance;
-        ResourceOrder res_order = this;
-
-        for (int i = 0; i < instance.numTasks; i++) {
-            for (int j = 0; j < instance.numJobs; j++) {
-                int t = instance.machine(i, j);
-            }
-
-        }
-
-        return null;
-    }
-
     /** Adds the given task to the queue of the given machine. */
     public void addTaskToMachine(int machine, Task task) {
         if(instance.machine(task) != machine) {
