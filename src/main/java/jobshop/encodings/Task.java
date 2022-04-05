@@ -1,6 +1,7 @@
 package jobshop.encodings;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 /** Represents a task (job,task) of a jobshop problem.
@@ -11,6 +12,9 @@ public final class Task {
 
     /** Identifier of the job */
     public final int job;
+
+    /** Start time of the task */
+    public int start_time;
 
     /** Index of the task inside the job. */
     public final int task;
@@ -30,6 +34,9 @@ public final class Task {
                 task == task1.task;
     }
 
+    public boolean containsTaskWithIndex(Collection<? extends Task> collection, int task) {
+        return collection.stream().anyMatch(t -> t.task == task);
+    }
 
     public boolean isPossible(ResourceOrder resourceOrder) {
 
@@ -40,11 +47,10 @@ public final class Task {
         if (pred_tasks_ro.contains(this)) {return false;}
 
         // Contains all predecessors needed, we remove them when we find them
-        ArrayList<Task> pred_tasks_necessary = this.getNecessaryPredecessors();
+        ArrayList<Integer> pred_tasks_necessary = this.getNecessaryPredecessors();
 
-        for (int i = 0; i < pred_tasks_necessary.size(); i++) {
-            Task t = pred_tasks_necessary.get(i);
-            if (!pred_tasks_ro.contains(t)) {
+        for (int t : pred_tasks_necessary) {
+            if (!this.containsTaskWithIndex(pred_tasks_ro, t)) {
                 return false;
             }
         }
@@ -52,11 +58,10 @@ public final class Task {
         return true;
     }
 
-    public ArrayList<Task> getNecessaryPredecessors() {
-        ArrayList<Task> necessary_pred = new ArrayList<>();
+    public ArrayList<Integer> getNecessaryPredecessors() {
+        ArrayList<Integer> necessary_pred = new ArrayList<>();
         for (int i = 0; i < this.task; i++) {
-            Task pred = new Task(this.job, i);
-            necessary_pred.add(pred);
+            necessary_pred.add(i);
         }
         return necessary_pred;
     }

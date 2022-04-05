@@ -28,19 +28,46 @@ public class GreedySolver implements Solver {
     }
 
     // Fails if remaining_tasks is null or empty
+    // TODO choix entre 2 (1, 0) et 3 (0, 0) choisis 3 (0, 0)
     public Task getSPT(ArrayList<Task> remaining_tasks, ResourceOrder resourceOrder, Instance instance) {
         assert remaining_tasks != null && !remaining_tasks.isEmpty();
 
         int min = Integer.MAX_VALUE;
+        int time_min = Integer.MAX_VALUE;
         Task spt_task = null;
-        for (int i = 0; i < remaining_tasks.size(); i++) {
-            Task t = remaining_tasks.get(i);
+        ArrayList<Task> best_tasks = new ArrayList<>();
+
+        for (Task t : remaining_tasks) {
             System.out.println(t + " : " + instance.duration(t));
-            if (t.isPossible(resourceOrder) && instance.duration(t) < min) {
+
+            if (t.isPossible(resourceOrder)) {
+
+                // MODE EST_SPT
+                if (this.priority == Priority.EST_SPT) {
+                    int t_start_time = t.start_time;
+                    if (t_start_time < time_min) {
+                        best_tasks.clear();
+                        best_tasks.add(t);
+                    }
+                    else if (t_start_time == time_min) {
+                        best_tasks.add(t);
+                    }
+                }
+                // MODE SPT
+                else if (this.priority == Priority.SPT) {
+                    best_tasks.add(t);
+                }
+            }
+        }
+        // TODO best_tasks doesn't contain (0, 0) which starts at the same time as (1, 0)
+        System.out.println("///////////////////////" + best_tasks);
+        for (Task t : best_tasks) {
+            if (instance.duration(t) < min) {
                 min = instance.duration(t);
                 spt_task = t;
             }
         }
+
         return spt_task;
     }
 
@@ -49,17 +76,16 @@ public class GreedySolver implements Solver {
         int aux_duration=0;
         int max = Integer.MIN_VALUE;
         Task lrpt_task = null;
-        for (int i = 0; i < remaining_tasks.size(); i++) {
-            Task t = remaining_tasks.get(i);
+        for (Task t : remaining_tasks) {
             System.out.println(t + " : " + instance.duration(t));
             for (int j = t.task; j < instance.numTasks; j++) {
-                aux_duration+=instance.duration(t.job, j);
+                aux_duration += instance.duration(t.job, j);
             }
             if (t.isPossible(resourceOrder) && aux_duration > max) {
                 max = aux_duration;
                 lrpt_task = t;
             }
-            aux_duration=0;
+            aux_duration = 0;
         }
         return lrpt_task;
     }
@@ -77,13 +103,14 @@ public class GreedySolver implements Solver {
 
         while (!remaining_tasks.isEmpty()) {
             Task highest_prio = null;
-            if (this.priority == Priority.SPT) {
+
+            if (this.priority == Priority.SPT || this.priority == Priority.EST_SPT) {
                 highest_prio = this.getSPT(remaining_tasks, sol, instance);
             }
-            else if (this.priority == Priority.LRPT) {
+            else if (this.priority == Priority.LRPT || this.priority == Priority.EST_LRPT) {
                 highest_prio = this.getLRPT(remaining_tasks, sol, instance);
-
             }
+
             System.out.println("Selected task : "+highest_prio);
             assert highest_prio != null;
             int machine = instance.machine(highest_prio);
@@ -91,7 +118,6 @@ public class GreedySolver implements Solver {
             remaining_tasks.remove(highest_prio);
         }
 
-        //throw new UnsupportedOperationException();
         return sol.toSchedule();
     }
 }

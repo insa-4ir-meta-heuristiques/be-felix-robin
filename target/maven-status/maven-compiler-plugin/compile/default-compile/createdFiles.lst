@@ -8,9 +8,10 @@ jobshop/solvers/neighborhood/Nowicki$Block.class
 jobshop/encodings/Task.class
 jobshop/solvers/neighborhood/Nowicki.class
 jobshop/solvers/neighborhood/Neighborhood.class
+jobshop/encodings/Machine.class
 jobshop/BestKnownResults.class
 jobshop/encodings/Schedule.class
 jobshop/Main.class
-jobshop/solvers/GreedySolver$Priority.class
 jobshop/solvers/neighborhood/Nowicki$Swap.class
+jobshop/solvers/GreedySolver$Priority.class
 jobshop/solvers/BasicSolver.class

@@ -63,6 +63,31 @@ public final class ResourceOrder extends Encoding {
         }
     }
 
+    /** Gets the end time of the previous task */
+    public int getPreviousTaskEndtime(Task t) {
+
+        if (t.task == 0) {
+            return 0;
+        }
+        int indice = t.task - 1;
+        //int machine = t.ma
+
+
+        return 0;
+    }
+
+    public void printTasksByMachine() {
+        System.out.print("[");
+        for (int mi = 0; mi < instance.numMachines-1; mi++) {
+            System.out.print("[");
+            for (int ti = 0; ti < instance.numTasks-1; ti++) {
+                System.out.print(this.tasksByMachine[mi][ti]+", ");
+            }
+            System.out.print("], ");
+        }
+        System.out.println("]");
+    }
+
     /** Adds the given task to the queue of the given machine. */
     public void addTaskToMachine(int machine, Task task) {
         if(instance.machine(task) != machine) {
@@ -70,6 +95,27 @@ public final class ResourceOrder extends Encoding {
         }
         tasksByMachine[machine][nextFreeSlot[machine]] = task;
         nextFreeSlot[machine] += 1;
+
+
+        Machine m = new Machine(machine);
+
+        // For the first task of the job we just have to begin where the previous task of the machine ends
+        if (task.task == 0) {
+            task.start_time = m.end_time;
+        }
+
+        // If the task is not the first, we have to compare the end time of the previous
+        // task of the job with the end time of the previous task on the machine
+        else {
+            ArrayList<Task> previous_tasks = task.getOtherTasksInResourceOrder(this);
+            Task previous_task = previous_tasks.get(previous_tasks.size() - 1);
+
+            //this.printTasksByMachine();
+            int previous_end_time = previous_task.start_time + this.instance.duration(previous_task);
+            task.start_time = Math.max(m.end_time, previous_end_time);
+        }
+        // Then, we update the end time of the machine, with the value of the end time of the added task.
+        m.end_time += task.start_time + this.instance.duration(task);
     }
 
     /** Returns the i-th task scheduled on a particular machine.
