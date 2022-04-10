@@ -19,10 +19,25 @@ public final class Task {
     /** Index of the task inside the job. */
     public final int task;
 
+    /** If the task can be executed next. */
+    public boolean is_possible;
+
+    /** Which Task is next. */
+    public Task next_task;
+
     /** Creates a new Task object (job, task). */
     public Task(int job, int task) {
         this.job = job;
         this.task = task;
+        this.is_possible = false;
+        this.next_task = null;
+    }
+
+    public Task(int job, int task, Task next_task) {
+        this.job = job;
+        this.task = task;
+        this.is_possible = false;
+        this.next_task = next_task;
     }
 
     @Override

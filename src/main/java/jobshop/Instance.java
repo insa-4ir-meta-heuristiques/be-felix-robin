@@ -75,12 +75,36 @@ public final class Instance {
         machines = new int[numJobs][numTasks];
     }
 
-    /** Returns all tasks in the instance. */
+    /** Returns all tasks in the instance.
+     * They are impossible by default.
+     * Adds the next_task to every task.
+     */
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> all_tasks = new ArrayList<>();
-        for (int j = 0; j < this.numJobs; j++) {
-            for (int i = 0; i < this.numTasks; i++) {
-                all_tasks.add(new Task(j, i));
+
+        for (int j = this.numJobs-1; j >= 0 ; j--) {
+
+            // The task that follows
+            Task next = null;
+
+            for (int i = this.numTasks-1; i >= 0 ; i--) {
+
+                Task t = new Task(j, i);
+                if (i == 0) {
+                    t.is_possible = true;
+                    t.next_task = next;
+                }
+                // If the task isn't the last one
+                // Then there is a next that isn't null
+                else if (i < this.numTasks-1) {
+                    t.next_task = next;
+                }
+
+                // If it's the last task, we just instantiate next
+                // If it's the fist task, updating next is useless
+                // Otherwise, we update next to the new value
+                next = t;
+                all_tasks.add(t);
             }
         }
         return all_tasks;
