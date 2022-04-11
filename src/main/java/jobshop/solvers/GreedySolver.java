@@ -4,9 +4,11 @@ import jobshop.Instance;
 import jobshop.encodings.ResourceOrder;
 import jobshop.encodings.Schedule;
 import jobshop.encodings.Task;
+import jobshop.solvers.neighborhood.Nowicki;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /** An empty shell to implement a greedy solver. */
@@ -176,18 +178,14 @@ public class GreedySolver implements Solver {
                 highest_prio.next_task.is_possible = true;
             }
         }
+        System.out.println("////////////////////");
+        System.out.println(sol);
+        Nowicki n = new Nowicki();
+        List<Nowicki.Block> blocks = n.blocksOfCriticalPath(sol);
+        System.out.println(blocks);
+        System.out.println(n.neighbors(blocks.get(0)));
+
 
         return sol.toSchedule();
     }
 }
-/*
-TESTS UNITAIRES isValid, getOtherTasksInResourceOrder, getNecessaryPredecessors
-        Task t_0 = new Task(0, 0);
-        sol.addTaskToMachine(0, t_0);
-        Task t_val = new Task(0, 1);
-        Task t_inval = new Task(0, 2);
-        System.out.println("false : " + t_0.isPossible(sol));
-        System.out.println("true : " + t_val.isPossible(sol));
-        System.out.println("false : " + t_inval.isPossible(sol));
-
- */

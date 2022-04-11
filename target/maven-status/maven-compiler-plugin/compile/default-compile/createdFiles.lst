@@ -12,6 +12,6 @@ jobshop/encodings/Machine.class
 jobshop/BestKnownResults.class
 jobshop/encodings/Schedule.class
 jobshop/Main.class
-jobshop/solvers/GreedySolver$Priority.class
 jobshop/solvers/neighborhood/Nowicki$Swap.class
+jobshop/solvers/GreedySolver$Priority.class
 jobshop/solvers/BasicSolver.class
