@@ -24,25 +24,14 @@ public class DescentSolver implements Solver {
         this.baseSolver = baseSolver;
     }
 
-    public Schedule getBestMakespan(List<ResourceOrder> neighbours) {
-        return null;
-    }
-
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
-        /*
-        repeat
-        {Sélectionner le meilleur voisin s′ sur tout le voisinage de s}
-        s′ ← (s′ ∈ N eighboor(s) tq ∀s′′ ∈ N eighboor(s), M akespan(s′) ≤ M akespan(s′′))
-        if M akespan(s′) < M akespan(s) then
-        s ← s′
-        end if
-        until pas de voisin améliorant ou time out
-         */
 
-        Optional<Schedule> os = new GreedySolver(GreedySolver.Priority.EST_SPT).solve(instance, deadline);
+        long start = System.currentTimeMillis();
+
+        Optional<Schedule> os = this.baseSolver.solve(instance, deadline);
         Schedule s;
-
+        ResourceOrder sol = null;
         if (os.isPresent()) {
             s = os.get();
         }
@@ -58,7 +47,7 @@ public class DescentSolver implements Solver {
         while (changed) {
 
             changed = false;
-
+            //int min_makespan = Integer.MAX_VALUE;
             for (ResourceOrder r : neighbours) {
                 if (r.toSchedule().isPresent()) {
 
@@ -67,17 +56,29 @@ public class DescentSolver implements Solver {
                     // trouver le minimum parmis les voisins (getBestMakespan ?)
                     // quand on a trouvé le min on compare le makespan
 
+                    // min_makespan?
                     if (new_makespan < makespan) {
-                        changed = true;
                         makespan = new_makespan;
+                        changed = true; //
+                        sol=r;
                     }
                 }
-                ;
             }
+            /*
+            if (min_makespan < makespan) {
+                changed = true;
+            }
+            */
+
 
         }
-        return null;
+        if (sol == null || sol.toSchedule().isEmpty()) {
 
+            throw new UnsupportedOperationException();
+
+        } else {
+            System.out.println("---------------- FINI DESCENT SOLVER ----------------");
+            return sol.toSchedule();
+        }
     }
-
 }

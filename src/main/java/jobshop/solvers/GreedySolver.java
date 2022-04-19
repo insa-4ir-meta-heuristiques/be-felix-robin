@@ -180,11 +180,12 @@ public class GreedySolver implements Solver {
         }
         System.out.println("////////////////////");
         System.out.println(sol);
+        /*
         Nowicki n = new Nowicki();
         List<Nowicki.Block> blocks = n.blocksOfCriticalPath(sol);
         System.out.println(blocks);
         System.out.println(n.neighbors(blocks.get(0)));
-
+        */
 
         return sol.toSchedule();
     }

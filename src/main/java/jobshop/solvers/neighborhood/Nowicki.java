@@ -162,7 +162,7 @@ public class Nowicki extends Neighborhood {
 
         int machine_avant = order.instance.machine(criticalPath.get(0));
         int machine_ici;
-        int first_task = 0;
+        Task first_task = criticalPath.get(0);
         boolean first = true;
 
         for (int i = 1; i < criticalPath.size(); i++) {
@@ -174,21 +174,25 @@ public class Nowicki extends Neighborhood {
 
             // Beginning of a chain
             if (machine_ici == machine_avant && first) {
-                first_task = i-1;
+                first_task = criticalPath.get(i-1);
                 first = false;
 
                 if (i == criticalPath.size()-1) {
-                    result.add(new Block(machine_avant, first_task, i));
+                    int index1 = order.getPositionForMachine(machine_ici, first_task);
+                    int index2 = order.getPositionForMachine(machine_ici, criticalPath.get(i));
+                    result.add(new Block(machine_avant, index1, index2));
                 }
             }
 
             // If first is false then we are in a chain
             // We remember the beginning task with first
-            // If the current machine and the previous machine re different, it's the end of the chain
+            // If the current machine and the previous machine are different, it's the end of the chain
             // Then we can add a block with first and previous
 
             else if (!first && machine_ici != machine_avant) {
-                result.add(new Block(machine_avant, first_task, i-1));
+                int index1 = order.getPositionForMachine(machine_avant, first_task);
+                int index2 = order.getPositionForMachine(machine_avant, criticalPath.get(i-1));
+                result.add(new Block(machine_avant, index1, index2));
                 first = true;
             }
 
@@ -198,8 +202,10 @@ public class Nowicki extends Neighborhood {
 
 
         }
-        //System.out.println("/// critical path ///");
-        //System.out.println(criticalPath);
+        /*
+        System.out.println("/// critical path ///");
+        System.out.println(criticalPath);
+        */
 
         return result;
     }

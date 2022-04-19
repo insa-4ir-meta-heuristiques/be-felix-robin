@@ -63,6 +63,8 @@ public final class ResourceOrder extends Encoding {
         }
     }
 
+
+
     /** Gets the end time of the previous task */
     public int getPreviousTaskEndtime(Task t) {
 
@@ -78,9 +80,9 @@ public final class ResourceOrder extends Encoding {
 
     public void printTasksByMachine() {
         System.out.print("[");
-        for (int mi = 0; mi < instance.numMachines-1; mi++) {
+        for (int mi = 0; mi < instance.numMachines; mi++) {
             System.out.print("[");
-            for (int ti = 0; ti < instance.numTasks-1; ti++) {
+            for (int ti = 0; ti < instance.numJobs; ti++) {
                 System.out.print(this.tasksByMachine[mi][ti]+", ");
             }
             System.out.print("], ");
@@ -135,9 +137,22 @@ public final class ResourceOrder extends Encoding {
      * @param indexTask2 Position of the second task in the machine's queue
      */
     public void swapTasks(int machine, int indexTask1, int indexTask2) {
+        System.out.println("Machine : "+machine+"/"+(instance.numMachines-1));
+        System.out.println("Task1 : "+indexTask1+"/"+(instance.numTasks-1));
+        System.out.println("Task2 : "+indexTask2+"/"+(instance.numTasks-1));
         Task tmp = tasksByMachine[machine][indexTask1];
         tasksByMachine[machine][indexTask1] = tasksByMachine[machine][indexTask2];
         tasksByMachine[machine][indexTask2] = tmp;
+    }
+
+    public int getPositionForMachine(int machine, Task t) {
+        printTasksByMachine();
+        for (int i = 0; i<instance.numJobs; i++) {
+            if (this.tasksByMachine[machine][i].task == t.task && this.tasksByMachine[machine][i].job == t.job) {
+                return i;
+            }
+        }
+        throw new RuntimeException();
     }
 
     @Override
