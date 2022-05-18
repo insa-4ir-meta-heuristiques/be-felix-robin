@@ -116,8 +116,9 @@ public final class ResourceOrder extends Encoding {
         // If the task is not the first, we have to compare the end time of the previous
         // task of the job with the end time of the previous task on the machine
         else {
+
             ArrayList<Task> previous_tasks = task.getOtherTasksInResourceOrder(this);
-            Task previous_task = previous_tasks.get(previous_tasks.size());
+            Task previous_task = previous_tasks.get(previous_tasks.size()-1);
 
             //this.printTasksByMachine();
             int previous_end_time = previous_task.start_time + this.instance.duration(previous_task);

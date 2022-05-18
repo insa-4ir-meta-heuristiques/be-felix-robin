@@ -168,10 +168,6 @@ public class Nowicki extends Neighborhood {
         for (int i = 1; i < criticalPath.size(); i++) {
             machine_ici = order.instance.machine(criticalPath.get(i));
 
-            //System.out.println(i + "/"+(criticalPath.size()-1));
-            //System.out.println(machine_avant + " vs " + machine_ici);
-            //System.out.println(first);
-
             // Beginning of a chain
             if (machine_ici == machine_avant && first) {
                 first_task = criticalPath.get(i-1);
@@ -183,7 +179,6 @@ public class Nowicki extends Neighborhood {
                     result.add(new Block(machine_avant, index1, index2));
                 }
             }
-
             // If first is false then we are in a chain
             // We remember the beginning task with first
             // If the current machine and the previous machine are different, it's the end of the chain
@@ -202,10 +197,6 @@ public class Nowicki extends Neighborhood {
 
 
         }
-        /*
-        System.out.println("/// critical path ///");
-        System.out.println(criticalPath);
-        */
 
         return result;
     }

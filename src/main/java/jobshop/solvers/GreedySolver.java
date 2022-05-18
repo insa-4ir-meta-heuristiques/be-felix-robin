@@ -140,9 +140,11 @@ public class GreedySolver implements Solver {
         // Create array of tasks to add to the RO
         // Only the first tasks are deemed possible
         ArrayList<Task> remaining_tasks = instance.getAllTasks();
-        ArrayList<Task> possible_tasks = new ArrayList<>();
+
 
         while (!remaining_tasks.isEmpty()) {
+
+            ArrayList<Task> possible_tasks = new ArrayList<>();
 
             highest_prio = null;
             index = (int)(Math.random() * 100);
@@ -154,7 +156,7 @@ public class GreedySolver implements Solver {
                         possible_tasks.add(t);
                     }
                 }
-                index = (int)(Math.random() * (possible_tasks.size()-1));
+                index = (int)(Math.random() * (possible_tasks.size()));
                 highest_prio = possible_tasks.get(index);
             }
 

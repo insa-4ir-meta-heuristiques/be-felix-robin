@@ -26,9 +26,9 @@ public interface Solver {
     static Solver getSolver(String name) {
 
         Nowicki no = new Nowicki();
-        boolean random = false;
+        boolean random = true;
 
-        int n_iter = 20;
+        int n_iter = 100;
         int tabooSize = 10;
 
         switch (name) {
@@ -49,5 +49,4 @@ public interface Solver {
         }
     }
 }
-
 
