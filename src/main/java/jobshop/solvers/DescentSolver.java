@@ -53,27 +53,16 @@ public class DescentSolver implements Solver {
 
                     int new_makespan = r.toSchedule().get().makespan();
 
-                    // trouver le minimum parmis les voisins (getBestMakespan ?)
-                    // quand on a trouvé le min on compare le makespan
-
-                    // min_makespan?
                     if (new_makespan < makespan) {
                         makespan = new_makespan;
-                        sol=r;
+                        sol = r;
                     }
                 }
             }
-            if(makespan<s.makespan()){
-                s=sol.toSchedule().get();
-                changed=true;
-            }
-            /*
-            if (min_makespan < makespan) {
+            if(makespan < s.makespan()){
+                s = sol.toSchedule().get();
                 changed = true;
             }
-            */
-
-
         }
         return Optional.of(s);
 

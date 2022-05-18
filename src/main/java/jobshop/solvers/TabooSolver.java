@@ -35,25 +35,25 @@ public class TabooSolver implements Solver {
         Optional<Schedule> os = this.baseSolver.solve(instance, deadline, maxIter);
         Schedule s;
         Schedule s_mem;
-        ResourceOrder sol=null;
-        ResourceOrder r=null;
+        ResourceOrder sol = null;
+        ResourceOrder r = null;
         if (os.isPresent()) {
             s = os.get();
         } else {
             throw new UnsupportedOperationException();
         }
-        s_mem=s;
-        List<Changes> Taboo =new ArrayList<>();
-        int compteur=0;
+        s_mem = s;
+        List<Changes> Taboo = new ArrayList<>();
+        int compteur = 0;
         int makespan = Integer.MAX_VALUE;
-        ResourceOrder ro=null;
+        ResourceOrder ro = null;
         List<Nowicki.Swap> swaps = null;
-        Changes change_final =null;
-        int index=0;
+        Changes change_final = null;
+        int index = 0;
 
-        while (compteur<maxIter && System.currentTimeMillis()<deadline) {
-            compteur+=1;
-            ro=new ResourceOrder(s);
+        while (compteur < maxIter && System.currentTimeMillis() < deadline) {
+            compteur += 1;
+            ro = new ResourceOrder(s);
             swaps = this.neighborhood.allSwaps(ro);
             for (Nowicki.Swap swap : swaps) {
                 Changes change = new Changes(ro.getTaskOfMachine(swap.machine, swap.t1), ro.getTaskOfMachine(swap.machine, swap.t2));
@@ -78,7 +78,7 @@ public class TabooSolver implements Solver {
             }
             Taboo.add(index, change_final);
             index=(index+1) % this.dureeTaboo;
-            if (makespan< s_mem.makespan()){
+            if (makespan < s_mem.makespan()){
                 s_mem=sol.toSchedule().get();
             }
             if  (sol.toSchedule().isPresent()) {

@@ -121,7 +121,7 @@ public class Main {
                     long start = System.currentTimeMillis();
                     long deadline = System.currentTimeMillis() + solveTimeMs;
                     // run the solver on the current instance
-                    Optional<Schedule> result = solver.solve(instance, deadline, 0);
+                    Optional<Schedule> result = solver.solve(instance, deadline, 150);
                     // measure elapsed time (in milliseconds)
                     long runtime = System.currentTimeMillis() - start;
 

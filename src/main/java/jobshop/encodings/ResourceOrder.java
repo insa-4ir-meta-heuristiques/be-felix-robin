@@ -117,7 +117,7 @@ public final class ResourceOrder extends Encoding {
         // task of the job with the end time of the previous task on the machine
         else {
             ArrayList<Task> previous_tasks = task.getOtherTasksInResourceOrder(this);
-            Task previous_task = previous_tasks.get(previous_tasks.size() - 1);
+            Task previous_task = previous_tasks.get(previous_tasks.size());
 
             //this.printTasksByMachine();
             int previous_end_time = previous_task.start_time + this.instance.duration(previous_task);
@@ -144,16 +144,16 @@ public final class ResourceOrder extends Encoding {
      * @param indexTask2 Position of the second task in the machine's queue
      */
     public void swapTasks(int machine, int indexTask1, int indexTask2) {
-        System.out.println("Machine : "+machine+"/"+(instance.numMachines-1));
-        System.out.println("Task1 : "+indexTask1+"/"+(instance.numTasks-1));
-        System.out.println("Task2 : "+indexTask2+"/"+(instance.numTasks-1));
+        //System.out.println("Machine : "+machine+"/"+(instance.numMachines-1));
+        //System.out.println("Task1 : "+indexTask1+"/"+(instance.numTasks-1));
+        //System.out.println("Task2 : "+indexTask2+"/"+(instance.numTasks-1));
         Task tmp = tasksByMachine[machine][indexTask1];
         tasksByMachine[machine][indexTask1] = tasksByMachine[machine][indexTask2];
         tasksByMachine[machine][indexTask2] = tmp;
     }
 
     public int getPositionForMachine(int machine, Task t) {
-        printTasksByMachine();
+        //printTasksByMachine();
         for (int i = 0; i<instance.numJobs; i++) {
             if (this.tasksByMachine[machine][i].task == t.task && this.tasksByMachine[machine][i].job == t.job) {
                 return i;
