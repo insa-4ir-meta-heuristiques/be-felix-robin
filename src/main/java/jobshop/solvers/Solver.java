@@ -17,7 +17,7 @@ public interface Solver {
      *                 This time is in milliseconds and can be compared with System.currentTimeMilliseconds()
      * @return An optional schedule that will be non empty if a solution was found.
      */
-    Optional<Schedule> solve(Instance instance, long deadline);
+    Optional<Schedule> solve(Instance instance, long deadline, int maxIter);
 
     /** Static factory method to create a new solver based on its name. */
     static Solver getSolver(String name) {

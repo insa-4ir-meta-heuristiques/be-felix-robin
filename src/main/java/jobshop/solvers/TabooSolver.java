@@ -1,15 +1,16 @@
 package jobshop.solvers;
 
+
 import jobshop.Instance;
 import jobshop.encodings.ResourceOrder;
 import jobshop.encodings.Schedule;
 import jobshop.solvers.neighborhood.Neighborhood;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
-/** An empty shell to implement a descent solver. */
-public class DescentSolver implements Solver {
+public class TabooSolver implements Solver {
 
     final Neighborhood neighborhood;
     final Solver baseSolver;
@@ -19,7 +20,7 @@ public class DescentSolver implements Solver {
      * @param neighborhood Neighborhood object that should be used to generates neighbor solutions to the current candidate.
      * @param baseSolver A solver to provide the initial solution.
      */
-    public DescentSolver(Neighborhood neighborhood, Solver baseSolver) {
+    public TabooSolver(Neighborhood neighborhood, Solver baseSolver) {
         this.neighborhood = neighborhood;
         this.baseSolver = baseSolver;
     }
@@ -27,55 +28,40 @@ public class DescentSolver implements Solver {
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline, int maxIter) {
 
-
         Optional<Schedule> os = this.baseSolver.solve(instance, deadline, maxIter);
         Schedule s;
-        ResourceOrder sol = null;
+        Schedule s_mem;
+        ResourceOrder sol=null;
         if (os.isPresent()) {
             s = os.get();
-        }
-
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
-
+        s_mem=s;
+        int compteur=0;
         int makespan = Integer.MAX_VALUE;
-        boolean changed = true;
         List<ResourceOrder> neighbours = this.neighborhood.generateNeighbors(new ResourceOrder(s));
 
-        while (changed && System.currentTimeMillis()<deadline) {
-
-            changed = false;
-            //int min_makespan = Integer.MAX_VALUE;
+        while (compteur<maxIter && System.currentTimeMillis()<deadline) {
+            compteur+=1;
             neighbours = this.neighborhood.generateNeighbors(new ResourceOrder(s));
             for (ResourceOrder r : neighbours) {
                 if (r.toSchedule().isPresent()) {
-
                     int new_makespan = r.toSchedule().get().makespan();
-
-                    // trouver le minimum parmis les voisins (getBestMakespan ?)
-                    // quand on a trouvé le min on compare le makespan
-
-                    // min_makespan?
                     if (new_makespan < makespan) {
                         makespan = new_makespan;
                         sol=r;
                     }
                 }
             }
-            if(makespan<s.makespan()){
-                s=sol.toSchedule().get();
-                changed=true;
+            if (makespan< s_mem.makespan()){
+                s_mem=sol.toSchedule().get();
             }
-            /*
-            if (min_makespan < makespan) {
-                changed = true;
+            if  (sol.toSchedule().isPresent()) {
+                s = sol.toSchedule().get();
             }
-            */
-
-
         }
-        return Optional.of(s);
-
+        return Optional.of(s_mem);
     }
+
 }
