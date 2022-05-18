@@ -18,6 +18,8 @@ public final class ResourceOrder extends Encoding {
     // for each machine, indicate how many tasks have been initialized
     final int[] nextFreeSlot;
 
+    private ArrayList<Machine> machines;
+
     /** Creates a new empty resource order. */
     public ResourceOrder(Instance instance)
     {
@@ -28,6 +30,11 @@ public final class ResourceOrder extends Encoding {
 
         // no task scheduled on any machine (0 is the default value)
         nextFreeSlot = new int[instance.numMachines];
+
+        machines = new ArrayList<>(instance.numMachines);
+        for (int i = 0; i < instance.numMachines; i++) {
+            machines.add(new Machine(i));
+        }
     }
 
     /** Creates a resource order from a schedule. */
@@ -99,7 +106,7 @@ public final class ResourceOrder extends Encoding {
         nextFreeSlot[machine] += 1;
 
 
-        Machine m = new Machine(machine);
+        Machine m = machines.get(machine);
 
         // For the first task of the job we just have to begin where the previous task of the machine ends
         if (task.task == 0) {
@@ -117,7 +124,7 @@ public final class ResourceOrder extends Encoding {
             task.start_time = Math.max(m.end_time, previous_end_time);
         }
         // Then, we update the end time of the machine, with the value of the end time of the added task.
-        m.end_time += task.start_time + this.instance.duration(task);
+        m.incrementEndTime(task.start_time + this.instance.duration(task));
     }
 
     /** Returns the i-th task scheduled on a particular machine.

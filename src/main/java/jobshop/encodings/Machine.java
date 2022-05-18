@@ -11,4 +11,8 @@ public class Machine {
         this.end_time = 0;
     }
 
+    public void incrementEndTime(int plus) {
+        this.end_time += plus;
+    }
+
 }

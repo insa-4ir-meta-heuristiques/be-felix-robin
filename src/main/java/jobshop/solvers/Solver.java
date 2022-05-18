@@ -36,7 +36,8 @@ public interface Solver {
             case "lrpt": return new GreedySolver(GreedySolver.Priority.LRPT, random, n_iter);
             case "est_lrpt": return new GreedySolver(GreedySolver.Priority.EST_LRPT, random, n_iter);
             case "est_spt": return new GreedySolver(GreedySolver.Priority.EST_SPT, random, n_iter);
-            case "descent_lrpt": return new DescentSolver(no, new GreedySolver(GreedySolver.Priority.EST_LRPT, random, n_iter));
+            case "taboo": return new TabooSolver(no, new GreedySolver(GreedySolver.Priority.EST_SPT, random, n_iter), 5);
+            case "descent_lrpt": return new DescentSolver(no, new GreedySolver(GreedySolver.Priority.LRPT, random, n_iter));
             default: throw new RuntimeException("Unknown solver: "+ name);
         }
     }

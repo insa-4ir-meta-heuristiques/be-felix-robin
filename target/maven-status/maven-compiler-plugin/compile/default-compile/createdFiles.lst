@@ -8,6 +8,7 @@ jobshop\solvers\neighborhood\Nowicki.class
 jobshop\solvers\neighborhood\Neighborhood.class
 jobshop\encodings\Task.class
 jobshop\encodings\Schedule.class
+jobshop\encodings\Changes.class
 jobshop\solvers\BasicSolver.class
 jobshop\solvers\GreedySolver.class
 jobshop\solvers\GreedySolver$Priority.class
