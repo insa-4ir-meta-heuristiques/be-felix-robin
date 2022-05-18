@@ -16,7 +16,7 @@ public class BasicSolverTests {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
 
         Solver solver = new BasicSolver();
-        Optional<Schedule> result = solver.solve(instance, System.currentTimeMillis() + 10);
+        Optional<Schedule> result = solver.solve(instance, System.currentTimeMillis() + 10, 0);
 
         assert result.isPresent() : "The solver did not find a solution";
         // extract the schedule associated to the solution

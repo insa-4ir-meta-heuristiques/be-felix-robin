@@ -21,12 +21,18 @@ public class GreedySolver implements Solver {
 
     /** Priority that the solver should use. */
     final Priority priority;
+    private final boolean random;
+    private int n_iter;
+    private final ArrayList<Schedule> solutions;
 
 
     /** Creates a new greedy solver that will use the given priority. */
-    public GreedySolver(Priority p) {
+    public GreedySolver(Priority p, boolean random, int n_iter) {
 
         this.priority = p;
+        this.n_iter = n_iter;
+        this.random = random;
+        this.solutions = new ArrayList<>();
 
     }
 
@@ -40,7 +46,7 @@ public class GreedySolver implements Solver {
         ArrayList<Task> best_tasks = new ArrayList<>();
 
         for (Task t : remaining_tasks) {
-            System.out.println(t + " : " + instance.duration(t));
+            //System.out.println(t + " : " + instance.duration(t));
 
             if (t.is_possible) {
 
@@ -80,7 +86,7 @@ public class GreedySolver implements Solver {
         int max = Integer.MIN_VALUE;
         Task lrpt_task = null;
         for (Task t : remaining_tasks) {
-            System.out.println(t + " : " + instance.duration(t));
+            //System.out.println(t + " : " + instance.duration(t));
             for (int j = t.task; j < instance.numTasks; j++) {
                 aux_duration += instance.duration(t.job, j);
             }
@@ -101,7 +107,7 @@ public class GreedySolver implements Solver {
         ArrayList<Task> best_tasks = new ArrayList<>();
 
         for (Task t : remaining_tasks) {
-            System.out.println(t + " : " + instance.duration(t));
+            //System.out.println(t + " : " + instance.duration(t));
 
 
             if (t.is_possible) {
@@ -124,8 +130,9 @@ public class GreedySolver implements Solver {
 
 
     public Optional<Schedule> solve(Instance instance, long deadline, int maxIter) {
+
         int index;
-        System.out.println("START");
+        Task highest_prio;
 
         // resource order that will be populated (initially empty)
         ResourceOrder sol = new ResourceOrder(instance);
@@ -136,9 +143,23 @@ public class GreedySolver implements Solver {
         ArrayList<Task> possible_tasks = new ArrayList<>();
 
         while (!remaining_tasks.isEmpty()) {
+
+            highest_prio = null;
             index = (int)(Math.random() * 100);
-            Task highest_prio = null;
-            if (index<=95) {
+
+            if (this.random && index > 95) {
+                // WITH RANDOM
+                for(Task t: remaining_tasks) {
+                    if (t.is_possible){
+                        possible_tasks.add(t);
+                    }
+                }
+                index = (int)(Math.random() * possible_tasks.size());
+                highest_prio = possible_tasks.get(index);
+            }
+
+            else {
+                // WITHOUT RANDOM
                 if (this.priority == Priority.SPT || this.priority == Priority.EST_SPT) {
                     highest_prio = this.getSPT(remaining_tasks, instance);
                 } else if (this.priority == Priority.LRPT) {
@@ -147,37 +168,54 @@ public class GreedySolver implements Solver {
                     highest_prio = this.getEST_LRPT(remaining_tasks, instance);
                 }
             }
-            else{
-                for(Task t: remaining_tasks) {
-                    if (t.is_possible){
-                        possible_tasks.add(t);
-                    }
-                }
-                index = (int)(Math.random() * possible_tasks.size());
-                highest_prio=possible_tasks.get(index);
-            }
-            System.out.println("Selected task : "+highest_prio);
+            //System.out.println("Selected task : " + highest_prio);
             assert highest_prio != null;
             int machine = instance.machine(highest_prio);
             sol.addTaskToMachine(machine, highest_prio);
 
             // Remove task that was just added to the schedule
             remaining_tasks.remove(highest_prio);
-            possible_tasks.remove(highest_prio);
 
             // Update which tasks are possible
             if (highest_prio.next_task != null) {
                 highest_prio.next_task.is_possible = true;
             }
+
         }
-        System.out.println("////////////////////");
-        System.out.println(sol);
-        Nowicki n = new Nowicki();
-        List<Nowicki.Block> blocks = n.blocksOfCriticalPath(sol);
-        System.out.println(blocks);
-        System.out.println(n.neighbors(blocks.get(0)));
+
+        //System.out.println("////////////////////");
+        //System.out.println(sol);
+        //Nowicki n = new Nowicki();
+        //List<Nowicki.Block> blocks = n.blocksOfCriticalPath(sol);
+        //System.out.println(blocks);
+        //System.out.println(n.neighbors(blocks.get(0)));
 
 
-        return sol.toSchedule();
+        // We must do more tests
+        if (random && n_iter > 0) {
+            assert sol.toSchedule().isPresent();
+            this.solutions.add(sol.toSchedule().get());
+            n_iter--;
+            return this.solve(instance, deadline, maxIter);
+
+        }
+        // We did every test, we need to choose the best outcome
+        else if (random) {
+            int min = Integer.MAX_VALUE;
+            Schedule best = null;
+            for (Schedule s : this.solutions) {
+                int m = s.makespan();
+                if (m < min) {
+                    min = m;
+                    best = s;
+                }
+            }
+            return Optional.ofNullable(best);
+        }
+        // Only one test to do
+        else {
+            // Convert the resource order into a schedule and return it
+            return sol.toSchedule();
+        }
     }
 }
