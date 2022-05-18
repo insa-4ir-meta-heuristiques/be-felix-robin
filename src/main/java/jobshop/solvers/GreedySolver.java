@@ -154,7 +154,7 @@ public class GreedySolver implements Solver {
                         possible_tasks.add(t);
                     }
                 }
-                index = (int)(Math.random() * possible_tasks.size());
+                index = (int)(Math.random() * (possible_tasks.size()-1));
                 highest_prio = possible_tasks.get(index);
             }
 
