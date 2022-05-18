@@ -1,10 +1,13 @@
 package jobshop.solvers.neighborhood;
 
 import jobshop.encodings.ResourceOrder;
+import jobshop.encodings.Schedule;
+import jobshop.encodings.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Implementation of the Nowicki and Smutnicki neighborhood.
@@ -41,6 +44,10 @@ public class Nowicki extends Neighborhood {
             this.machine = machine;
             this.firstTask = firstTask;
             this.lastTask = lastTask;
+        }
+
+        public String toString() {
+            return "Machine "+this.machine+" : "+this.firstTask+"-"+this.lastTask;
         }
     }
 
@@ -82,12 +89,26 @@ public class Nowicki extends Neighborhood {
             }
         }
 
+        public String toString() {
+
+            return "Machine "+this.machine+" : "+this.t1+"<->"+this.t2;
+        }
 
         /** Creates a new ResourceOrder order that is the result of performing the swap in the original ResourceOrder.
          *  The original ResourceOrder MUST NOT be modified by this operation.
          */
         public ResourceOrder generateFrom(ResourceOrder original) {
-            throw new UnsupportedOperationException();
+
+
+            ResourceOrder ro = original.copy();
+            ro.swapTasks(this.machine, this.t1, this.t2);
+
+            if (ro.toSchedule().isPresent()) {
+                return ro;
+            }
+            else {
+                throw new UnsupportedOperationException();
+            }
         }
 
         @Override
@@ -125,13 +146,76 @@ public class Nowicki extends Neighborhood {
     }
 
     /** Returns a list of all the blocks of the critical path. */
-    List<Block> blocksOfCriticalPath(ResourceOrder order) {
-        throw new UnsupportedOperationException();
+    public List<Block> blocksOfCriticalPath(ResourceOrder order) {
+
+        List<Block> result = new ArrayList<>();
+
+        Optional<Schedule> s = order.toSchedule();
+        List<Task> criticalPath;
+
+        if (s.isPresent()) {
+            criticalPath = s.get().criticalPath();
+        }
+        else {
+            throw new UnsupportedOperationException();
+        }
+
+        int machine_avant = order.instance.machine(criticalPath.get(0));
+        int machine_ici;
+        Task first_task = criticalPath.get(0);
+        boolean first = true;
+
+        for (int i = 1; i < criticalPath.size(); i++) {
+            machine_ici = order.instance.machine(criticalPath.get(i));
+
+            // Beginning of a chain
+            if (machine_ici == machine_avant && first) {
+                first_task = criticalPath.get(i-1);
+                first = false;
+
+                if (i == criticalPath.size()-1) {
+                    int index1 = order.getPositionForMachine(machine_ici, first_task);
+                    int index2 = order.getPositionForMachine(machine_ici, criticalPath.get(i));
+                    result.add(new Block(machine_avant, index1, index2));
+                }
+            }
+            // If first is false then we are in a chain
+            // We remember the beginning task with first
+            // If the current machine and the previous machine are different, it's the end of the chain
+            // Then we can add a block with first and previous
+
+            else if (!first && machine_ici != machine_avant) {
+                int index1 = order.getPositionForMachine(machine_avant, first_task);
+                int index2 = order.getPositionForMachine(machine_avant, criticalPath.get(i-1));
+                result.add(new Block(machine_avant, index1, index2));
+                first = true;
+            }
+
+            else {
+                machine_avant = machine_ici;
+            }
+
+
+        }
+
+        return result;
     }
 
     /** For a given block, return the possible swaps for the Nowicki and Smutnicki neighborhood */
-    List<Swap> neighbors(Block block) {
-        throw new UnsupportedOperationException();
+    public List<Swap> neighbors(Block block) {
+
+        List<Swap> l = new ArrayList<>();
+
+        Swap s1 = new Swap(block.machine, block.firstTask+1, block.firstTask);
+        l.add(s1);
+
+        if (block.lastTask - block.firstTask > 2) {
+
+            Swap s2 = new Swap(block.machine, block.lastTask, block.lastTask-1);
+            l.add(s2);
+        }
+
+        return l;
     }
 
 }

@@ -1,16 +1,18 @@
 package jobshop.encodings;
 
 import jobshop.Instance;
-import jobshop.solvers.Solver;
 import jobshop.solvers.BasicSolver;
+import jobshop.solvers.Solver;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-public class BasicSolverTests {
+public class GreedySolverTests {
 
+    @Ignore
     @Test
     public void testBasicSolver() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));

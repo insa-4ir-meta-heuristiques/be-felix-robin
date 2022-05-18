@@ -2,7 +2,10 @@ package jobshop.solvers;
 
 import jobshop.Instance;
 import jobshop.encodings.Schedule;
+import jobshop.solvers.neighborhood.Neighborhood;
+import jobshop.solvers.neighborhood.Nowicki;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 /** Common interface that must implemented by all solvers. */
@@ -15,16 +18,35 @@ public interface Solver {
      *                 This time is in milliseconds and can be compared with System.currentTimeMilliseconds()
      * @return An optional schedule that will be non empty if a solution was found.
      */
-    Optional<Schedule> solve(Instance instance, long deadline);
+    Optional<Schedule> solve(Instance instance, long deadline, int maxIter);
+
+
 
     /** Static factory method to create a new solver based on its name. */
     static Solver getSolver(String name) {
+
+        Nowicki no = new Nowicki();
+        boolean random = true;
+
+        int n_iter = 100;
+        int tabooSize = 10;
+
         switch (name) {
             case "basic": return new BasicSolver();
-            case "spt": return new GreedySolver(GreedySolver.Priority.SPT);
-            // TODO: add new solvers
+            case "spt": return new GreedySolver(GreedySolver.Priority.SPT, random, n_iter);
+            case "lrpt": return new GreedySolver(GreedySolver.Priority.LRPT, random, n_iter);
+            case "est_lrpt": return new GreedySolver(GreedySolver.Priority.EST_LRPT, random, n_iter);
+            case "est_spt": return new GreedySolver(GreedySolver.Priority.EST_SPT, random, n_iter);
+            case "taboo_est_spt": return new TabooSolver(no, new GreedySolver(GreedySolver.Priority.EST_SPT, random, n_iter), tabooSize);
+            case "taboo_est_lrpt": return new TabooSolver(no, new GreedySolver(GreedySolver.Priority.EST_LRPT, random, n_iter), tabooSize);
+            case "taboo_spt": return new TabooSolver(no, new GreedySolver(GreedySolver.Priority.SPT, random, n_iter), tabooSize);
+            case "taboo_lrpt": return new TabooSolver(no, new GreedySolver(GreedySolver.Priority.LRPT, random, n_iter), tabooSize);
+            case "descent_lrpt": return new DescentSolver(no, new GreedySolver(GreedySolver.Priority.LRPT, random, n_iter));
+            case "descent_spt": return new DescentSolver(no, new GreedySolver(GreedySolver.Priority.SPT, random, n_iter));
+            case "descent_est_lrpt": return new DescentSolver(no, new GreedySolver(GreedySolver.Priority.EST_LRPT, random, n_iter));
+            case "descent_est_spt": return new DescentSolver(no, new GreedySolver(GreedySolver.Priority.EST_SPT, random, n_iter));
             default: throw new RuntimeException("Unknown solver: "+ name);
         }
     }
-
 }
+

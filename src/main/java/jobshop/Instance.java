@@ -5,6 +5,7 @@ import jobshop.encodings.Task;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -72,6 +73,41 @@ public final class Instance {
 
         durations = new int[numJobs][numTasks];
         machines = new int[numJobs][numTasks];
+    }
+
+    /** Returns all tasks in the instance.
+     * They are impossible by default.
+     * Adds the next_task to every task.
+     */
+    public ArrayList<Task> getAllTasks() {
+        ArrayList<Task> all_tasks = new ArrayList<>();
+
+        for (int j = this.numJobs-1; j >= 0 ; j--) {
+
+            // The task that follows
+            Task next = null;
+
+            for (int i = this.numTasks-1; i >= 0 ; i--) {
+
+                Task t = new Task(j, i);
+                if (i == 0) {
+                    t.is_possible = true;
+                    t.next_task = next;
+                }
+                // If the task isn't the last one
+                // Then there is a next that isn't null
+                else if (i < this.numTasks-1) {
+                    t.next_task = next;
+                }
+
+                // If it's the last task, we just instantiate next
+                // If it's the fist task, updating next is useless
+                // Otherwise, we update next to the new value
+                next = t;
+                all_tasks.add(t);
+            }
+        }
+        return all_tasks;
     }
 
     /** Parses a instance from a file. */

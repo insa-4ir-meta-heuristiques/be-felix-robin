@@ -5,14 +5,17 @@ import jobshop.encodings.ResourceOrder;
 import jobshop.encodings.Schedule;
 import jobshop.encodings.Task;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
  * A very naïve solver that first schedules all first tasks, then all second tasks, ...
  **/
 public class BasicSolver implements Solver {
+
+
     @Override
-    public Optional<Schedule> solve(Instance instance, long deadline) {
+    public Optional<Schedule> solve(Instance instance, long deadline, int maxIter) {
 
         // resource order that will be populated (initially empty)
         ResourceOrder sol = new ResourceOrder(instance);
@@ -28,7 +31,7 @@ public class BasicSolver implements Solver {
             }
         }
 
-        // Convert the resource order into a schedule and return it
         return sol.toSchedule();
+
     }
 }

@@ -2,6 +2,7 @@ package jobshop.encodings;
 
 import jobshop.Instance;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
@@ -17,6 +18,8 @@ public final class ResourceOrder extends Encoding {
     // for each machine, indicate how many tasks have been initialized
     final int[] nextFreeSlot;
 
+    private ArrayList<Machine> machines;
+
     /** Creates a new empty resource order. */
     public ResourceOrder(Instance instance)
     {
@@ -27,6 +30,11 @@ public final class ResourceOrder extends Encoding {
 
         // no task scheduled on any machine (0 is the default value)
         nextFreeSlot = new int[instance.numMachines];
+
+        machines = new ArrayList<>(instance.numMachines);
+        for (int i = 0; i < instance.numMachines; i++) {
+            machines.add(new Machine(i));
+        }
     }
 
     /** Creates a resource order from a schedule. */
@@ -62,6 +70,33 @@ public final class ResourceOrder extends Encoding {
         }
     }
 
+
+
+    /** Gets the end time of the previous task */
+    public int getPreviousTaskEndtime(Task t) {
+
+        if (t.task == 0) {
+            return 0;
+        }
+        int indice = t.task - 1;
+        //int machine = t.ma
+
+
+        return 0;
+    }
+
+    public void printTasksByMachine() {
+        System.out.print("[");
+        for (int mi = 0; mi < instance.numMachines; mi++) {
+            System.out.print("[");
+            for (int ti = 0; ti < instance.numJobs; ti++) {
+                System.out.print(this.tasksByMachine[mi][ti]+", ");
+            }
+            System.out.print("], ");
+        }
+        System.out.println("]");
+    }
+
     /** Adds the given task to the queue of the given machine. */
     public void addTaskToMachine(int machine, Task task) {
         if(instance.machine(task) != machine) {
@@ -69,6 +104,28 @@ public final class ResourceOrder extends Encoding {
         }
         tasksByMachine[machine][nextFreeSlot[machine]] = task;
         nextFreeSlot[machine] += 1;
+
+
+        Machine m = machines.get(machine);
+
+        // For the first task of the job we just have to begin where the previous task of the machine ends
+        if (task.task == 0) {
+            task.start_time = m.end_time;
+        }
+
+        // If the task is not the first, we have to compare the end time of the previous
+        // task of the job with the end time of the previous task on the machine
+        else {
+
+            ArrayList<Task> previous_tasks = task.getOtherTasksInResourceOrder(this);
+            Task previous_task = previous_tasks.get(previous_tasks.size()-1);
+
+            //this.printTasksByMachine();
+            int previous_end_time = previous_task.start_time + this.instance.duration(previous_task);
+            task.start_time = Math.max(m.end_time, previous_end_time);
+        }
+        // Then, we update the end time of the machine, with the value of the end time of the added task.
+        m.incrementEndTime(task.start_time + this.instance.duration(task));
     }
 
     /** Returns the i-th task scheduled on a particular machine.
@@ -88,9 +145,22 @@ public final class ResourceOrder extends Encoding {
      * @param indexTask2 Position of the second task in the machine's queue
      */
     public void swapTasks(int machine, int indexTask1, int indexTask2) {
+        //System.out.println("Machine : "+machine+"/"+(instance.numMachines-1));
+        //System.out.println("Task1 : "+indexTask1+"/"+(instance.numTasks-1));
+        //System.out.println("Task2 : "+indexTask2+"/"+(instance.numTasks-1));
         Task tmp = tasksByMachine[machine][indexTask1];
         tasksByMachine[machine][indexTask1] = tasksByMachine[machine][indexTask2];
         tasksByMachine[machine][indexTask2] = tmp;
+    }
+
+    public int getPositionForMachine(int machine, Task t) {
+        //printTasksByMachine();
+        for (int i = 0; i<instance.numJobs; i++) {
+            if (this.tasksByMachine[machine][i].task == t.task && this.tasksByMachine[machine][i].job == t.job) {
+                return i;
+            }
+        }
+        throw new RuntimeException();
     }
 
     @Override
